@@ -45,16 +45,16 @@ class UBTeacherTrainer(DefaultTrainer):
         """
         cfg = DefaultTrainer.auto_scale_workers(cfg, comm.get_world_size())
 
-        # create an student model
+        # create an student model #TODO: Change this to model builder of yolov8 -> Change modeling
         model = self.build_model(cfg)
         optimizer = self.build_optimizer(cfg, model)
 
-        # create an teacher model
+        # create an teacher model #TODO: Change this to model builder of yolov8
         model_teacher = self.build_model(cfg)
         self.model_teacher = model_teacher
         self.model_teacher.eval()
 
-        data_loader = self.build_train_loader(cfg)
+        data_loader = self.build_train_loader(cfg) #TODO: Change the train loader
 
         # For training, wrap with DDP. But don't need this for inference.
         if comm.get_world_size() > 1:
@@ -147,7 +147,7 @@ class UBTeacherTrainer(DefaultTrainer):
 
                 for self.iter in range(start_iter, max_iter):
                     self.before_step()
-                    self.run_step_full_semisup()
+                    self.run_step_full_semisup() 
                     self.after_step()
             except Exception:
                 logger.exception("Exception during training:")
@@ -178,7 +178,7 @@ class UBTeacherTrainer(DefaultTrainer):
     # =================== Training Flow ===================
     # =====================================================
 
-    def run_step_full_semisup(self):
+    def run_step_full_semisup(self): #TODO: Adapt new losses
         self._trainer.iter = self.iter
         assert self.model.training, "[UBTeacherTrainer] model was changed to eval mode!"
         start = time.perf_counter()
@@ -193,7 +193,7 @@ class UBTeacherTrainer(DefaultTrainer):
             label_data_q.extend(label_data_k)
             if self.cfg.SOLVER.AMP.ENABLED:
                 with autocast():
-                    record_dict = self.model(label_data_q, branch="labeled")
+                    record_dict = self.model(label_data_q, branch="labeled") #? Como isso é feito? modelo com branchs
             else:
                 record_dict = self.model(label_data_q, branch="labeled")
 
