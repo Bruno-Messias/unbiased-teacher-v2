@@ -137,19 +137,35 @@ class YOLOv8Head(nn.Module): #? How to declare p3, p4, p5
         self.p5 = p5
 
         self.ump = nn.Upsample(scale_factor=2)
-        self.concat_1 = Concat() #! Concatenate list of tensors
+        self.concat = Concat() #! Concatenate list of tensors
         self.c2f_1 = C2f(512, 512, n=3*d)
         self.c2f_2 = C2f(256, 256, n=3*d)
 
-        self.conv_1 = Conv(256, 512, k=3, s=2)
+        self.conv_1 = Conv(256, 256, k=3, s=2)
         self.c2f_3 = C2f(512, 512, n=3*d)
+        self.conv_2 = Conv(512, 512, k=3, s=2)
         self.c2f_4 = C2f(1024, 1024, n=3*d)
 
         self.detect = Detect(nc=20)
 
-    def forward(self, x):
+    def forward(self):
         out_ump_1 = self.ump(self.p5)
+        out_concat_1 = self.concat([out_ump_1, self.p4])
+        out_c2f_1 = self.c2f_1(out_concat_1)
+        out_ump_2 = self.ump(out_c2f_1)
+        out_concat_2 = self.concat([out_ump_2, self.p3])
+        out_c2f_2 = self.c2f_2(out_concat_2)
 
+        out_conv_1 = self.conv_1(out_c2f_2)
+        out_concat_3 = self.concat([out_c2f_1, out_conv_1])
 
+        out_c2f_3 = self.c2f_3(out_concat_3)
+        out_conv_2 = self.conv_2(out_c2f_3)
+        out_concat_4 = self.concat([out_conv_2, out_conv_2])
+        out_c2f_4 = self.c2f_4(out_concat_4)
 
+        detect_1 = self.detect(out_c2f_2)
+        detect_2 = self.detect(out_c2f_3)
+        detect_3 = self.detect(out_c2f_4)
 
+        return [detect_1, detect_2, detect_3] #TODO: understand how to convert to proposal head
