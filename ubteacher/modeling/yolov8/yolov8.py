@@ -169,3 +169,5 @@ class YOLOv8Head(nn.Module): #? How to declare p3, p4, p5
         detect_3 = self.detect(out_c2f_4)
 
         return [detect_1, detect_2, detect_3] #TODO: understand how to convert to proposal head
+    
+    #TODO: YOLOv8 head?
