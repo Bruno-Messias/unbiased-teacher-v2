@@ -57,7 +57,7 @@ class FCOS(nn.Module):
 
         self.fcos_outputs = FCOSOutputs(cfg)
 
-    def forward_head(self, features, top_module=None):
+    def forward_head(self, features, top_module=None): #? O que é isso?
         features = [features[f] for f in self.in_features]
 
         if self.kl_loss:
@@ -215,7 +215,6 @@ class FCOS(nn.Module):
             )
             locations.append(locations_per_level)
         return locations
-
 
 class FCOSHead(nn.Module):
     def __init__(self, cfg, input_shape: List[ShapeSpec]):

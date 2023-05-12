@@ -51,7 +51,8 @@ class PseudoProposalNetwork(nn.Module):
 
     def __init__(self, cfg):
         super().__init__()
-        self.backbone = build_backbone(cfg)
+        self.backbone = build_backbone(cfg) 
+        #TODO: Alterar para receber uma lista, vai mudar o proposal para receber isso tbm
         self.proposal_generator = build_proposal_generator(
             cfg, self.backbone.output_shape()
         )
